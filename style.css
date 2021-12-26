@@ -96,3 +96,13 @@ section span {
 .red {
   background-color: red;
 }
+
+.winner {
+  animation: turn infinite 1s ease-in-out;
+}
+
+@keyframes turn {
+  50% {
+    transform: rotateY(180deg);
+  }
+}

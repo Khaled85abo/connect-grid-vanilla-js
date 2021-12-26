@@ -30,7 +30,7 @@ function initState() {
   state.gridsToConnect;
   state.validationObj = {};
   //   state.validationObj = {
-  //     0: [1, 1, 2, 1],
+  //     0: [{token: 1, tokenId: 0}, {token: 1, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 8}],
   //     1: [2, 1, 1, 2],
   //     2: [1, 1, 1, 2],
   //     3: [2, 2, 2, 1],
@@ -70,6 +70,7 @@ function checkResult(columnKey) {
 function checkVertically(columnKey) {
   const column = state.validationObj[columnKey];
   let lastToken = column[column.length - 1].token;
+  const tokensArray = [column[column.length - 1]];
   for (
     let i = column.length - 2;
     i >= column.length - state.gridsToConnect;
@@ -78,48 +79,17 @@ function checkVertically(columnKey) {
     if (lastToken !== column[i].token) {
       return false;
     }
-    lastToken = column[i].token;
+    tokensArray.push(column[i]);
+    // lastToken = column[i].token;
   }
-  announceWinner(
-    lastToken,
-    state.validationObj[columnKey].length - 1,
-    columnKey
-  );
+  announceWinner(lastToken, tokensArray);
 }
 
 function checkHorizantally(columnKey) {
   const column = state.validationObj[columnKey];
-  const lastToken = column[column.length - 1];
-  const theTokenIndex = column.length - 1;
-  // console.log("lastToken", lastToken);
-  // console.log("lastToken index", theTokenIndex);
+  const lastToken = column[column.length - 1].token;
+  const theTokenIndex = column.length - 1; // It is always the last token added in a column that is going to be the start token
 
-  // When token is in the last column
-  // if (!state.validationObj[columnKey + 1]) {
-  //   for (let i = 0; i <= state.gridsToConnect - 1; i++) {
-  //     // console.log(state.validationObj[columnKey - i][theTokenIndex]);
-  //     if (state.validationObj[columnKey - i][theTokenIndex] !== lastToken) {
-  //       return false;
-  //     }
-  //   }
-  //   const winner = lastToken === 1 ? "first player" : "second player";
-  //   announceWinner(winner);
-  // }
-
-  // When token is in the first column
-  // if (!state.validationObj[columnKey - 1]) {
-  //   console.log("first column");
-  //   for (let i = 0; i <= state.gridsToConnect - 1; i++) {
-  //     // console.log(state.validationObj[columnKey + i][theTokenIndex]);
-  //     if (state.validationObj[columnKey + i][theTokenIndex] !== lastToken) {
-  //       return false;
-  //     }
-  //   }
-  //   const winner = lastToken === 1 ? "first player" : "second player";
-  //   announceWinner(winner);
-  // }
-
-  // When token is in inner column
   // creating arraies where the token occupiees all possibles positions
   // and checking if any array contains the same tokens.
   let validationArraies = [];
@@ -127,7 +97,8 @@ function checkHorizantally(columnKey) {
   console.log("token index: ", theTokenIndex);
   for (let i = 0; i < state.gridsToConnect; i++) {
     console.log("column index: ", columnKey - i);
-    const output = createHorizontalArray(columnKey - i, theTokenIndex);
+    // extract token from nearby columns with the same token level (index).
+    const output = createHorizontalArrays(columnKey - i, theTokenIndex);
     if (output) {
       validationArraies.push(output);
     }
@@ -135,43 +106,116 @@ function checkHorizantally(columnKey) {
   console.log("validationArraies", validationArraies);
   for (let arr of validationArraies) {
     let match = true;
-    let token = arr[0];
+    let token = arr[0].token;
     for (let el of arr) {
-      if (el !== token) {
+      if (el.token !== token) {
         match = false;
       }
     }
     if (match) {
-      announceWinner(token, theTokenIndex, columnKey);
+      announceWinner(token, arr);
     }
-    console.log("match: ", match, token);
   }
 }
 
-function createHorizontalArray(columnIndex, theTokenIndex) {
-  let variation = [];
-  // if (columnIndex >= 0) {
+// this extra step can be avoided
+function createHorizontalArrays(columnIndex, theTokenIndex) {
+  let output = [];
   for (let j = columnIndex; j < columnIndex + state.gridsToConnect; j++) {
     if (j >= 0 && j < state.columns) {
-      // if (state.validationObj[j][theTokenIndex]) {
-      //   console.log(
-      //     "elemnet from validation object: ",
-      //     state.validationObj[j][theTokenIndex]
-      //   );
-      //   variation.push(state.validationObj[j][theTokenIndex]);
-      // }
-      variation.push(state.validationObj[j][theTokenIndex]);
+      output.push(state.validationObj[j][theTokenIndex]);
     }
   }
-  let filteredVariation = variation.filter((item) => item !== undefined);
-  console.log("filtered variatin array:", filteredVariation);
-  if (filteredVariation.length === state.gridsToConnect) {
-    return filteredVariation;
+  // filtering out all undefined values from output array
+  let filteredOutput = output.filter((item) => item !== undefined);
+  console.log("output array:", output);
+  console.log("filtered output array:", filteredOutput);
+  // Returning only output array that has as many items as gridsToConnect
+  if (filteredOutput.length === state.gridsToConnect) {
+    return filteredOutput;
   }
-  // }
 }
 
-function checkDiagonally(columnKey) {}
+function checkDiagonally(columnKey) {
+  const column = state.validationObj[columnKey];
+  const theTokenIndex = column.length - 1; // It is always the last token added in a column that is going to be the start token
+
+  // creating arraies where the token occupiees all possibles positions
+  // and checking if any array contains the same tokens.
+  let validationArraies = [];
+
+  console.log("token index: ", theTokenIndex);
+  // with 135 tilting
+  for (let i = 0; i < state.gridsToConnect; i++) {
+    console.log("column index: ", columnKey - i);
+    const output = createDiagonal135DegArrays(columnKey - i, theTokenIndex + i);
+    if (output) {
+      validationArraies.push(output);
+    }
+  }
+
+  // with 45 tilting
+  for (let i = 0; i < state.gridsToConnect; i++) {
+    console.log("column index: ", columnKey - i);
+    const output = createDiagonal45DegArrays(columnKey - i, theTokenIndex - i);
+    if (output) {
+      validationArraies.push(output);
+    }
+  }
+
+  console.log("validationArraies", validationArraies);
+  for (let arr of validationArraies) {
+    let match = true;
+    let token = arr[0].token;
+    for (let el of arr) {
+      if (el.token !== token) {
+        match = false;
+      }
+    }
+    if (match) {
+      announceWinner(token, arr);
+    }
+  }
+}
+
+function createDiagonal135DegArrays(columnIndex, theTokenIndex) {
+  let output = [];
+
+  let startTokenIndex = theTokenIndex;
+  for (let j = columnIndex; j < columnIndex + state.gridsToConnect; j++) {
+    if (j >= 0 && j < state.columns) {
+      output.push(state.validationObj[j][startTokenIndex]);
+      startTokenIndex--;
+    }
+  }
+  // filtering out all undefined values from output array
+  let filteredOutput = output.filter((item) => item !== undefined);
+  console.log("output array:", output);
+  console.log("filtered output array:", filteredOutput);
+  // Returning only output array that has as many items as gridsToConnect
+  if (filteredOutput.length === state.gridsToConnect) {
+    return filteredOutput;
+  }
+}
+function createDiagonal45DegArrays(columnIndex, theTokenIndex) {
+  let output = [];
+
+  let startTokenIndex = theTokenIndex;
+  for (let j = columnIndex; j < columnIndex + state.gridsToConnect; j++) {
+    if (j >= 0 && j < state.columns) {
+      output.push(state.validationObj[j][startTokenIndex]);
+      startTokenIndex++;
+    }
+  }
+  // filtering out all undefined values from output array
+  let filteredOutput = output.filter((item) => item !== undefined);
+  console.log("output array:", output);
+  console.log("filtered output array:", filteredOutput);
+  // Returning only output array that has as many items as gridsToConnect
+  if (filteredOutput.length === state.gridsToConnect) {
+    return filteredOutput;
+  }
+}
 
 //#endregion
 
@@ -255,7 +299,6 @@ function checkAddiablity(div) {
 }
 
 function renderColumns() {
-  console.log(state.tokensCounter);
   document.querySelector(".columns-container").innerHTML = "";
   for (let i = 0; i < state.columns; i++) {
     const div = document.createElement("div");
@@ -267,9 +310,15 @@ function renderColumns() {
   console.log(state.validationObj);
 }
 
-function announceWinner(token, tokenIndex, coulmnindex) {
+function announceWinner(token, tokensArray) {
   const winner = token === 1 ? "first player" : "second player";
   console.log("The winner is the", winner);
+  console.log("array of tokens", tokensArray);
+  for (let token of tokensArray) {
+    document
+      .querySelector(`[data-token-id='${token.tokenId}']`)
+      .classList.add("winner");
+  }
 }
 
 //#endregion
