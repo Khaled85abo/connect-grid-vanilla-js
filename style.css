@@ -1,0 +1,98 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.players {
+  width: 90vw;
+  margin: auto;
+  padding: 2rem;
+  background-color: aliceblue;
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.players > .first-player > img {
+  color: blue;
+}
+.players > .second-player > img {
+  color: rgb(255, 0, 0);
+}
+
+.highlight {
+  transform: scale(2);
+  margin-bottom: 1rem;
+  box-shadow: 1px 2px 4px black;
+  border-radius: 50%;
+}
+
+button {
+  padding: 1rem 2rem;
+  text-transform: uppercase;
+  border-radius: 8px;
+  background-color: rgb(120, 255, 67);
+  box-shadow: 2px 2px 2px black;
+}
+
+section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+section span {
+  padding-left: 1rem;
+}
+.range {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  padding: 1rem 2rem;
+}
+.columns-container {
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  height: 80vh;
+}
+
+.columns-container > div {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: flex-end; */
+  transform: rotate(180deg);
+  min-width: 100px;
+  max-width: 300px;
+  height: 100%;
+  background-color: bisque;
+  border: 1px solid black;
+}
+
+.token {
+  height: 99px;
+  width: 99px;
+  border-radius: 50%;
+  /* position: absolute; */
+  animation: dropp 1s cubic-bezier(1, 0.28, 0.68, 0.99);
+}
+
+@keyframes dropp {
+  0% {
+    opacity: 0;
+    transform: translateY(300px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+.blue {
+  background-color: blue;
+}
+.red {
+  background-color: red;
+}
