@@ -26,7 +26,11 @@
           </svg>
           <h3>First Player</h3>
         </div>
-        <button>Start Game</button>
+        <div class="settings-div">
+          <img src="./assets/lightbulb_black_24dp.svg" alt="" />
+          <button class="start-again">Reset Game</button>
+          <img src="./assets/settings_black_24dp.svg" alt="" />
+        </div>
         <div class="second-player">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +47,7 @@
           <h3>Second Player</h3>
         </div>
       </header>
-      <section>
+      <section class="inputs">
         <div class="range">
           <div>
             <label for="columns">Number of columns</label>
@@ -66,6 +70,62 @@
         <div class="third"></div>
         <div class="fourth"></div> -->
       </main>
+      <section class="player-info">
+        <!-- <div>
+          <div>
+            <label for="color">Choose a color</label>
+            <input type="color" id="color" />
+            <label for="name">Write your name</label>
+            <input type="text" id="name" />
+          </div>
+          <div class="btns">
+            <button class="cancel">Cancel</button>
+            <button class="submit">Submit</button>
+          </div>
+        </div> -->
+        <div>
+          <div>
+            <h2>How to Play</h2>
+            <p>
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ducimus
+              necessitatibus voluptatibus in exercitationem temporibus quae
+              dolorem officia iusto explicabo molestias nostrum nemo voluptas
+              nihil porro, ea fuga eveniet asperiores! Nobis assumenda
+              praesentium quae perspiciatis sed, dolor atque facere tenetur,
+              aspernatur, laborum ut? Illum tempore ab incidunt illo
+              dignissimos, delectus dolorum!
+            </p>
+          </div>
+          <div class="btns">
+            <button class="cancel">Cancel</button>
+          </div>
+        </div>
+      </section>
+      <section class="player-settings">
+        <div>
+          <div>
+            <h2>Change Settings</h2>
+            <input type="checkbox" id="dblClick" checked />
+            <label for="dblClick">Use Double click to add tokens.</label>
+            <input type="checkbox" id="h-verification" checked />
+            <label for="h-verification"
+              >When Grid aligns horizontally, the player wins</label
+            >
+            <input type="checkbox" id="v-verification" checked />
+            <label for="v-verification"
+              >When Grid aligns vertically, the player wins</label
+            >
+            <input type="checkbox" id="d-verification" checked />
+            <label for="d-verification"
+              >When Grid aligns diagonally, the player wins</label
+            >
+          </div>
+          <div class="btns">
+            <button class="cancel">Cancel</button>
+            <button class="reset">Reset</button>
+          </div>
+        </div>
+      </section>
     </div>
   </body>
 </html>

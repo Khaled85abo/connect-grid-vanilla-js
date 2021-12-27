@@ -5,7 +5,10 @@
  */
 ///#region
 const state = {};
-
+const CONSTANTS = {
+  DBLCLICK: "dblclick",
+  CLICK: "click",
+};
 function main() {
   initState();
   showPlayer();
@@ -25,15 +28,16 @@ function initState() {
   state.turn = Math.random() > 0.5 ? true : false;
   state.tokensCounter = 0;
   state.infoShown = false;
+  state.clickType = CONSTANTS.DBLCLICK;
   state.maxTokens;
   state.columns;
   state.gridsToConnect;
   state.validationObj = {};
   //   state.validationObj = {
-  //     0: [{token: 1, tokenId: 0}, {token: 1, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 8}],
-  //     1: [2, 1, 1, 2],
-  //     2: [1, 1, 1, 2],
-  //     3: [2, 2, 2, 1],
+  //     0: [{token: 1, tokenId: 0}, {token: 1, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 14}],
+  //     1: [{token: 0, tokenId: 0}, {token: 1, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 15}],
+  //     2: [{token: 0, tokenId: 0}, {token: 0, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 16}],
+  //     3: [{token: 1, tokenId: }, {token: 1, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 13}],
   //   };
 }
 
@@ -96,7 +100,6 @@ function checkHorizantally(columnKey) {
 
   console.log("token index: ", theTokenIndex);
   for (let i = 0; i < state.gridsToConnect; i++) {
-    console.log("column index: ", columnKey - i);
     // extract token from nearby columns with the same token level (index).
     const output = createHorizontalArrays(columnKey - i, theTokenIndex);
     if (output) {
@@ -128,8 +131,6 @@ function createHorizontalArrays(columnIndex, theTokenIndex) {
   }
   // filtering out all undefined values from output array
   let filteredOutput = output.filter((item) => item !== undefined);
-  console.log("output array:", output);
-  console.log("filtered output array:", filteredOutput);
   // Returning only output array that has as many items as gridsToConnect
   if (filteredOutput.length === state.gridsToConnect) {
     return filteredOutput;
@@ -147,7 +148,6 @@ function checkDiagonally(columnKey) {
   console.log("token index: ", theTokenIndex);
   // with 135 tilting
   for (let i = 0; i < state.gridsToConnect; i++) {
-    console.log("column index: ", columnKey - i);
     const output = createDiagonal135DegArrays(columnKey - i, theTokenIndex + i);
     if (output) {
       validationArraies.push(output);
@@ -156,7 +156,6 @@ function checkDiagonally(columnKey) {
 
   // with 45 tilting
   for (let i = 0; i < state.gridsToConnect; i++) {
-    console.log("column index: ", columnKey - i);
     const output = createDiagonal45DegArrays(columnKey - i, theTokenIndex - i);
     if (output) {
       validationArraies.push(output);
@@ -190,8 +189,6 @@ function createDiagonal135DegArrays(columnIndex, theTokenIndex) {
   }
   // filtering out all undefined values from output array
   let filteredOutput = output.filter((item) => item !== undefined);
-  console.log("output array:", output);
-  console.log("filtered output array:", filteredOutput);
   // Returning only output array that has as many items as gridsToConnect
   if (filteredOutput.length === state.gridsToConnect) {
     return filteredOutput;
@@ -209,14 +206,38 @@ function createDiagonal45DegArrays(columnIndex, theTokenIndex) {
   }
   // filtering out all undefined values from output array
   let filteredOutput = output.filter((item) => item !== undefined);
-  console.log("output array:", output);
-  console.log("filtered output array:", filteredOutput);
   // Returning only output array that has as many items as gridsToConnect
   if (filteredOutput.length === state.gridsToConnect) {
     return filteredOutput;
   }
 }
 
+function handleStartAgain() {
+  state.tokensCounter = 0;
+  state.validationObj = {};
+  renderColumns();
+  document.querySelectorAll("[data-token-id]").forEach((el) => el.remove());
+}
+
+function handleClosePlayerInfoModal() {
+  document.querySelector(".player-info").classList.remove("show-modal");
+}
+function handleOpenPlayerInfoModal() {
+  document.querySelector(".player-info").classList.add("show-modal");
+}
+function handleOpenPlayerSettingsModal() {
+  document.querySelector(".player-settings").classList.add("show-modal");
+}
+function handleClosePlayerSettingsModal() {
+  document.querySelector(".player-settings").classList.remove("show-modal");
+}
+
+function changeAddingTokensClick() {
+  state.clickType = document.querySelector("#dblClick").checked
+    ? CONSTANTS.DBLCLICK
+    : CONSTANTS.CLICK;
+  console.log(state.clickType);
+}
 //#endregion
 
 /***
@@ -233,10 +254,37 @@ function initActions() {
   document
     .querySelector("#tokens")
     .addEventListener("change", handleInputChange);
+
+  document
+    .querySelector(".start-again")
+    .addEventListener("click", handleStartAgain);
+
+  document
+    .querySelector(".player-settings .reset")
+    .addEventListener("click", () => {
+      handleStartAgain();
+      handleClosePlayerSettingsModal();
+    });
+
+  document
+    .querySelector(".player-info .cancel")
+    .addEventListener("click", handleClosePlayerInfoModal);
+  document
+    .querySelector(".player-settings .cancel")
+    .addEventListener("click", handleClosePlayerSettingsModal);
+  document
+    .querySelector(".settings-div > img:nth-of-type(1)")
+    .addEventListener("click", handleOpenPlayerInfoModal);
+  document
+    .querySelector(".settings-div > img:nth-of-type(2)")
+    .addEventListener("click", handleOpenPlayerSettingsModal);
+  document
+    .querySelector("#dblClick")
+    .addEventListener("change", changeAddingTokensClick);
 }
 
 function initDivAction(div, columnKey) {
-  div.addEventListener("dblclick", () => {
+  div.addEventListener(state.clickType, () => {
     const token = state.turn ? 1 : 0;
     const tokenDiv = `<div data-token-id=${state.tokensCounter} class='token ${
       state.turn ? "red" : "blue"

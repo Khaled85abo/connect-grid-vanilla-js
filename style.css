@@ -3,6 +3,12 @@
   padding: 0;
   box-sizing: border-box;
 }
+:root {
+  --first-player: red;
+  --second-player: blue;
+  --column-height: 800px;
+  --column-width: 200px;
+}
 
 .players {
   width: 90vw;
@@ -15,10 +21,10 @@
 }
 
 .players > .first-player > img {
-  color: blue;
+  color: var(--second-player);
 }
 .players > .second-player > img {
-  color: rgb(255, 0, 0);
+  color: var(--first-player);
 }
 
 .highlight {
@@ -28,21 +34,30 @@
   border-radius: 50%;
 }
 
-button {
-  padding: 1rem 2rem;
+.players button {
+  padding: 0.7rem 1rem;
   text-transform: uppercase;
   border-radius: 8px;
   background-color: rgb(120, 255, 67);
-  box-shadow: 2px 2px 2px black;
+  box-shadow: 2px 2px 5px black;
 }
 
-section {
+.settings-div {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.settings-div img {
+  margin: 0.5rem;
+  cursor: pointer;
+}
+.inputs {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-section span {
+.inputs span {
   padding-left: 1rem;
 }
 .range {
@@ -69,6 +84,8 @@ section span {
   height: 100%;
   background-color: bisque;
   border: 1px solid black;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
 }
 
 .token {
@@ -91,10 +108,10 @@ section span {
 }
 
 .blue {
-  background-color: blue;
+  background-color: var(--second-player);
 }
 .red {
-  background-color: red;
+  background-color: var(--first-player);
 }
 
 .winner {
@@ -105,4 +122,68 @@ section span {
   50% {
     transform: rotateY(180deg);
   }
+}
+
+.player-info,
+.player-settings {
+  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  transform: scale(0.1);
+  opacity: 0;
+  z-index: -1;
+  transition: all 0.6s ease-in-out;
+}
+
+.show-modal {
+  /* animation: showSlowly 1s ease-in-out; */
+  transform: scale(1);
+  opacity: 1;
+  z-index: 2;
+}
+
+@keyframes showSlowly {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+    z-index: -2;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    z-index: 2;
+  }
+}
+
+.player-info > div,
+.player-settings > div {
+  border-radius: 8px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+  background-color: aliceblue;
+  min-width: 300px;
+  min-height: 300px;
+}
+.player-info > div > div:first-of-type {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+}
+.player-info label {
+  margin: 2rem 0 0.5rem 0;
+}
+
+.player-info .btns button {
+  margin: 0 1rem;
 }

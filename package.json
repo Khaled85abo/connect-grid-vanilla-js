@@ -1,0 +1,22 @@
+{
+  "name": "connect-grid",
+  "version": "1.0.0",
+  "description": "connect grid game with extra settings",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Khaled85abo/connect-grid-vanilla-js.git"
+  },
+  "author": "Khaled Abo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Khaled85abo/connect-grid-vanilla-js/issues"
+  },
+  "homepage": "https://github.com/Khaled85abo/connect-grid-vanilla-js#readme",
+  "dependencies": {
+    "canvas-confetti": "^1.4.0"
+  }
+}
