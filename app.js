@@ -33,12 +33,30 @@ function initState() {
   state.columns;
   state.gridsToConnect;
   state.validationObj = {};
+  state.h_verification = true;
+  state.v_verification = true;
+  state.d_verification = true;
+  state.snackBarTime = 3;
   //   state.validationObj = {
   //     0: [{token: 1, tokenId: 0}, {token: 1, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 14}],
   //     1: [{token: 0, tokenId: 0}, {token: 1, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 15}],
   //     2: [{token: 0, tokenId: 0}, {token: 0, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 16}],
   //     3: [{token: 1, tokenId: }, {token: 1, tokenId: 5}, {token: 0, tokenId: 4}, {token: 0, tokenId: 13}],
   //   };
+}
+
+class Token {
+  constructor(tokenCounter) {
+    this.tokenId = tokenCounter;
+  }
+  _createToken() {
+    return `<div data-token-id='${this.tokenId}' ></div>`;
+  }
+  _renderToken(tokenCount, columnKey) {
+    const token = this._createToken(tokenCount);
+    document.querySelector(`[data-column-id=${columnKey}]`).appendChild(token);
+  }
+  _alignedToken() {}
 }
 
 function getInputValues() {
@@ -61,14 +79,19 @@ function shiftPlayer() {
 }
 
 function checkResult(columnKey) {
-  // console.log(state.validationObj[columnKey].length, state.gridsToConnect);
   const column = state.validationObj[columnKey];
   const gridsToConnect = state.gridsToConnect;
-  if (column.length === gridsToConnect || column.length > gridsToConnect) {
-    checkVertically(columnKey);
+  if (state.v_verification) {
+    if (column.length === gridsToConnect || column.length > gridsToConnect) {
+      checkVertically(columnKey);
+    }
   }
-  checkHorizantally(columnKey);
-  checkDiagonally(columnKey);
+  if (state.h_verification) {
+    checkHorizantally(columnKey);
+  }
+  if (state.d_verification) {
+    checkDiagonally(columnKey);
+  }
 }
 
 function checkVertically(columnKey) {
@@ -238,6 +261,60 @@ function changeAddingTokensClick() {
     : CONSTANTS.CLICK;
   console.log(state.clickType);
 }
+
+function handle_v_verification(e) {
+  if (e.target.checked) {
+    state.v_verification = true;
+  } else {
+    if (!state.h_verification && !state.d_verification) {
+      showSnackBar();
+      e.target.checked = true;
+      return;
+    }
+    state.v_verification = false;
+  }
+  console.table([
+    state.h_verification,
+    state.v_verification,
+    state.d_verification,
+  ]);
+}
+function handle_h_verification(e) {
+  if (e.target.checked) {
+    state.h_verification = true;
+  } else {
+    if (!state.v_verification && !state.d_verification) {
+      showSnackBar();
+      e.target.checked = true;
+
+      return;
+    }
+    state.h_verification = false;
+  }
+  console.table([
+    state.h_verification,
+    state.v_verification,
+    state.d_verification,
+  ]);
+}
+function handle_d_verification(e) {
+  if (e.target.checked) {
+    state.d_verification = true;
+  } else {
+    if (!state.h_verification && !state.v_verification) {
+      showSnackBar();
+      e.target.checked = true;
+
+      return;
+    }
+    state.d_verification = false;
+  }
+  console.table([
+    state.h_verification,
+    state.v_verification,
+    state.d_verification,
+  ]);
+}
 //#endregion
 
 /***
@@ -248,6 +325,15 @@ function changeAddingTokensClick() {
 //#region
 
 function initActions() {
+  document
+    .querySelector("#h-verification")
+    .addEventListener("change", handle_h_verification);
+  document
+    .querySelector("#v-verification")
+    .addEventListener("change", handle_v_verification);
+  document
+    .querySelector("#d-verification")
+    .addEventListener("change", handle_d_verification);
   document
     .querySelector("#columns")
     .addEventListener("change", handleInputChange);
@@ -284,13 +370,18 @@ function initActions() {
 }
 
 function initDivAction(div, columnKey) {
+  checkScreenWidth();
   div.addEventListener(state.clickType, () => {
     const token = state.turn ? 1 : 0;
     const tokenDiv = `<div data-token-id=${state.tokensCounter} class='token ${
       state.turn ? "red" : "blue"
     }'></div>`;
+
+    // const token = new Token(state.tokenCount)
+
     if (checkAddiablity(div)) {
       div.insertAdjacentHTML("beforeend", tokenDiv);
+      // token._renderToken(e.target.dataset.columnId)
       state.validationObj[columnKey].push({
         token,
         tokenId: state.tokensCounter,
@@ -369,4 +460,29 @@ function announceWinner(token, tokensArray) {
   }
 }
 
+function checkScreenWidth() {
+  if (window.innerWidth < 700) {
+    state.clickType = CONSTANTS.CLICK;
+    document.querySelector("#dblClick").checked = false;
+  }
+}
+
+function showSnackBar() {
+  const snackBar = document.createElement("div");
+  snackBar.innerHTML =
+    "<p>At least one validation method should be available!</p>";
+  const exit = document.createElement("div");
+  exit.innerText = "X";
+  snackBar.appendChild(exit);
+  snackBar.classList.add("snack-bar");
+  document.body.appendChild(snackBar);
+
+  exit.addEventListener("click", () => {
+    snackBar.remove();
+  });
+
+  setTimeout(() => {
+    snackBar.remove();
+  }, state.snackBarTime * 1000);
+}
 //#endregion

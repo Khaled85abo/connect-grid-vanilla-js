@@ -11,21 +11,22 @@
 }
 
 .players {
-  width: 90vw;
+  /* width: 90vw; */
   margin: auto;
   padding: 2rem;
   background-color: aliceblue;
   display: flex;
   justify-content: space-between;
   text-align: center;
+  border-radius: 8px;
 }
 
-.players > .first-player > img {
+/* .players > .first-player > img {
   color: var(--second-player);
 }
 .players > .second-player > img {
   color: var(--first-player);
-}
+} */
 
 .highlight {
   transform: scale(2);
@@ -33,18 +34,16 @@
   box-shadow: 1px 2px 4px black;
   border-radius: 50%;
 }
-
-.players button {
+.settings-div {
+  display: flex;
+  flex-wrap: wrap;
+}
+.settings-div button {
   padding: 0.7rem 1rem;
   text-transform: uppercase;
   border-radius: 8px;
   background-color: rgb(120, 255, 67);
   box-shadow: 2px 2px 5px black;
-}
-
-.settings-div {
-  display: flex;
-  flex-wrap: wrap;
 }
 
 .settings-div img {
@@ -68,10 +67,11 @@
   padding: 1rem 2rem;
 }
 .columns-container {
-  margin: auto;
+  /* margin: auto; */
   display: flex;
   justify-content: center;
   height: 80vh;
+  overflow: hidden;
 }
 
 .columns-container > div {
@@ -79,18 +79,23 @@
   flex-direction: column;
   /* justify-content: flex-end; */
   transform: rotate(180deg);
-  min-width: 100px;
-  max-width: 300px;
+  width: 70px;
   height: 100%;
   background-color: bisque;
-  border: 1px solid black;
+  border: 3px solid aliceblue;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
 }
+/* .columns-container > div::before {
+  content: "";
+  width: 3px;
+  height: calc(100% - 10px);
+  background-color: blue;
+} */
 
 .token {
-  height: 99px;
-  width: 99px;
+  height: 65px;
+  width: 65px;
   border-radius: 50%;
   /* position: absolute; */
   animation: dropp 1s cubic-bezier(1, 0.28, 0.68, 0.99);
@@ -158,7 +163,18 @@
     z-index: 2;
   }
 }
-
+.player-info button,
+.player-settings button {
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  background-color: aliceblue;
+  border: none;
+  box-shadow: 0px 0px 5px black;
+}
+.player-info button:hover,
+.player-settings button:hover {
+  box-shadow: inset 0 0 5px black;
+}
 .player-info > div,
 .player-settings > div {
   border-radius: 8px;
@@ -173,12 +189,27 @@
   background-color: aliceblue;
   min-width: 300px;
   min-height: 300px;
+  max-width: 500px;
 }
-.player-info > div > div:first-of-type {
+.player-info > div > div:first-of-type,
+.player-settings > div > div:first-of-type {
   display: flex;
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
+}
+
+.player-info > div > div:first-of-type > ul {
+  /* list-style-type: none; */
+  padding: 1rem;
+}
+.player-settings > div > div:first-of-type > ul {
+  list-style-type: none;
+  padding: 1rem;
+}
+.player-settings > div > div:first-of-type > ul > li,
+.player-info > div > div:first-of-type > ul > li {
+  padding: 0.4rem 0;
 }
 .player-info label {
   margin: 2rem 0 0.5rem 0;
@@ -186,4 +217,71 @@
 
 .player-info .btns button {
   margin: 0 1rem;
+}
+
+.player-settings .btns {
+  width: 60%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.snack-bar {
+  position: relative;
+  position: absolute;
+  bottom: 10vh;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 8px;
+  background-color: rgb(221, 64, 64);
+  color: white;
+  padding: 1.2rem;
+  z-index: 5;
+}
+
+.snack-bar > div {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: rgb(238, 79, 92);
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 600px) {
+  .players {
+    /* width: 100vw; */
+    padding: 0.5rem 0.5rem;
+
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .players h3 {
+    font-size: 0.9rem;
+  }
+  .settings-div {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+  .highlight {
+    transform: scale(1.4);
+    margin-bottom: 0.5rem;
+  }
+
+  .range {
+    padding: 0.4rem 0;
+  }
+  .columns-container > div {
+    width: 50px;
+    height: 100%;
+  }
+  .token {
+    width: 40px;
+    height: 40px;
+  }
 }

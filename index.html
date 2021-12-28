@@ -86,15 +86,20 @@
         <div>
           <div>
             <h2>How to Play</h2>
-            <p>
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ducimus
-              necessitatibus voluptatibus in exercitationem temporibus quae
-              dolorem officia iusto explicabo molestias nostrum nemo voluptas
-              nihil porro, ea fuga eveniet asperiores! Nobis assumenda
-              praesentium quae perspiciatis sed, dolor atque facere tenetur,
-              aspernatur, laborum ut? Illum tempore ab incidunt illo
-              dignissimos, delectus dolorum!
-            </p>
+            <ul>
+              <li>
+                You deploy a token by double clicking on the wanted column. this
+                can be change to a single click in the setting section.
+              </li>
+              <li>
+                You win when connecting the choosen amount of grids vertically,
+                horizontally or diagonally.
+              </li>
+              <li>
+                You can choose which type of connection to exclude in the
+                settings section.
+              </li>
+            </ul>
           </div>
           <div class="btns">
             <button class="cancel">Cancel</button>
@@ -105,20 +110,42 @@
         <div>
           <div>
             <h2>Change Settings</h2>
-            <input type="checkbox" id="dblClick" checked />
-            <label for="dblClick">Use Double click to add tokens.</label>
-            <input type="checkbox" id="h-verification" checked />
-            <label for="h-verification"
-              >When Grid aligns horizontally, the player wins</label
-            >
-            <input type="checkbox" id="v-verification" checked />
-            <label for="v-verification"
-              >When Grid aligns vertically, the player wins</label
-            >
-            <input type="checkbox" id="d-verification" checked />
-            <label for="d-verification"
-              >When Grid aligns diagonally, the player wins</label
-            >
+
+            <ul>
+              <li>
+                <input type="checkbox" id="dblClick" checked />
+                <label for="dblClick">Use Double click to add tokens.</label>
+              </li>
+              <li>The player wins when</li>
+              <li>
+                <input type="checkbox" id="h-verification" checked />
+                <label for="h-verification">Grid aligns horizontally.</label>
+                <img
+                  src="./assets/horizontal.png"
+                  alt="horizontal"
+                  width="15px"
+                />
+              </li>
+              <li>
+                <input type="checkbox" id="v-verification" checked />
+                <label for="v-verification">Grid aligns vertically.</label>
+                <img src="./assets/vertical.png" alt="vertical" height="15px" />
+              </li>
+              <li>
+                <input type="checkbox" id="d-verification" checked />
+                <label for="d-verification">Grid aligns diagonally.</label>
+                <img
+                  src="./assets/diagonal1.png"
+                  alt="diagonal 45"
+                  height="15px"
+                />
+                <img
+                  src="./assets/diagonal2.png"
+                  alt="diagonal 135"
+                  height="15px"
+                />
+              </li>
+            </ul>
           </div>
           <div class="btns">
             <button class="cancel">Cancel</button>
