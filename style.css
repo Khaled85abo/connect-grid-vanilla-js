@@ -6,7 +6,6 @@
 :root {
   --first-player: red;
   --second-player: blue;
-  --column-height: 800px;
   --column-width: 200px;
 }
 
@@ -16,7 +15,7 @@
   padding: 2rem;
   background-color: aliceblue;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   text-align: center;
   border-radius: 8px;
 }
