@@ -70,7 +70,7 @@
   /* margin: auto; */
   display: flex;
   justify-content: center;
-  height: 80vh;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -277,11 +277,11 @@
     padding: 0.4rem 0;
   }
   .columns-container > div {
-    width: 50px;
+    width: 35px;
     height: 100%;
   }
   .token {
-    width: 40px;
-    height: 40px;
+    width: 28px;
+    height: 28px;
   }
 }
