@@ -12,7 +12,7 @@ const CONSTANTS = {
 function main() {
   initState();
   showPlayer();
-  getInputValues();
+  renderRangeValuesInInputs();
   renderColumns();
   initActions();
 }
@@ -25,13 +25,13 @@ main();
  */
 //#region
 function initState() {
+  state.columns = 8;
+  state.gridsToConnect = 4;
   state.turn = Math.random() > 0.5 ? true : false;
   state.tokensCounter = 0;
   state.infoShown = false;
   state.clickType = CONSTANTS.DBLCLICK;
   state.maxTokens;
-  state.columns;
-  state.gridsToConnect;
   state.validationObj = {};
   state.h_verification = true;
   state.v_verification = true;
@@ -59,19 +59,6 @@ class Token {
   _alignedToken() {}
 }
 
-function getInputValues() {
-  state.columns = Number(document.querySelector("#columns").value);
-  state.gridsToConnect = Number(document.querySelector("#tokens").value);
-  renderInputValues();
-}
-
-function handleInputChange() {
-  state.columns = Number(document.querySelector("#columns").value);
-  state.gridsToConnect = Number(document.querySelector("#tokens").value);
-  renderInputValues();
-  renderColumns();
-}
-
 function shiftPlayer() {
   state.turn = !state.turn;
   state.tokensCounter++;
@@ -79,17 +66,23 @@ function shiftPlayer() {
 }
 
 function checkResult(columnKey) {
-  const column = state.validationObj[columnKey];
-  const gridsToConnect = state.gridsToConnect;
-  if (state.v_verification) {
-    if (column.length === gridsToConnect || column.length > gridsToConnect) {
+  const {
+    gridsToConnect,
+    v_verification,
+    h_verification,
+    d_verification,
+    validationObj,
+  } = state;
+  const column = validationObj[columnKey];
+  if (v_verification) {
+    if (column.length >= gridsToConnect) {
       checkVertically(columnKey);
     }
   }
-  if (state.h_verification) {
+  if (h_verification) {
     checkHorizantally(columnKey);
   }
-  if (state.d_verification) {
+  if (d_verification) {
     checkDiagonally(columnKey);
   }
 }
@@ -144,7 +137,6 @@ function checkHorizantally(columnKey) {
   }
 }
 
-// this extra step can be avoided
 function createHorizontalArrays(columnIndex, theTokenIndex) {
   let output = [];
   for (let j = columnIndex; j < columnIndex + state.gridsToConnect; j++) {
@@ -165,7 +157,6 @@ function checkDiagonally(columnKey) {
   const theTokenIndex = column.length - 1; // It is always the last token added in a column that is going to be the start token
 
   // creating arraies where the token occupiees all possibles positions
-  // and checking if any array contains the same tokens.
   let validationArraies = [];
 
   console.log("token index: ", theTokenIndex);
@@ -186,6 +177,7 @@ function checkDiagonally(columnKey) {
   }
 
   console.log("validationArraies", validationArraies);
+  // Checking if any array contains the same token.
   for (let arr of validationArraies) {
     let match = true;
     let token = arr[0].token;
@@ -235,31 +227,10 @@ function createDiagonal45DegArrays(columnIndex, theTokenIndex) {
   }
 }
 
-function handleStartAgain() {
-  state.tokensCounter = 0;
-  state.validationObj = {};
-  renderColumns();
-  document.querySelectorAll("[data-token-id]").forEach((el) => el.remove());
-}
-
-function handleClosePlayerInfoModal() {
-  document.querySelector(".player-info").classList.remove("show-modal");
-}
-function handleOpenPlayerInfoModal() {
-  document.querySelector(".player-info").classList.add("show-modal");
-}
-function handleOpenPlayerSettingsModal() {
-  document.querySelector(".player-settings").classList.add("show-modal");
-}
-function handleClosePlayerSettingsModal() {
-  document.querySelector(".player-settings").classList.remove("show-modal");
-}
-
 function changeAddingTokensClick() {
   state.clickType = document.querySelector("#dblClick").checked
     ? CONSTANTS.DBLCLICK
     : CONSTANTS.CLICK;
-  console.log(state.clickType);
 }
 
 function handle_v_verification(e) {
@@ -273,11 +244,6 @@ function handle_v_verification(e) {
     }
     state.v_verification = false;
   }
-  console.table([
-    state.h_verification,
-    state.v_verification,
-    state.d_verification,
-  ]);
 }
 function handle_h_verification(e) {
   if (e.target.checked) {
@@ -286,16 +252,10 @@ function handle_h_verification(e) {
     if (!state.v_verification && !state.d_verification) {
       showSnackBar();
       e.target.checked = true;
-
       return;
     }
     state.h_verification = false;
   }
-  console.table([
-    state.h_verification,
-    state.v_verification,
-    state.d_verification,
-  ]);
 }
 function handle_d_verification(e) {
   if (e.target.checked) {
@@ -304,16 +264,10 @@ function handle_d_verification(e) {
     if (!state.h_verification && !state.v_verification) {
       showSnackBar();
       e.target.checked = true;
-
       return;
     }
     state.d_verification = false;
   }
-  console.table([
-    state.h_verification,
-    state.v_verification,
-    state.d_verification,
-  ]);
 }
 //#endregion
 
@@ -336,10 +290,10 @@ function initActions() {
     .addEventListener("change", handle_d_verification);
   document
     .querySelector("#columns")
-    .addEventListener("change", handleInputChange);
+    .addEventListener("change", handleColumnsRangeChange);
   document
     .querySelector("#tokens")
-    .addEventListener("change", handleInputChange);
+    .addEventListener("change", handleGridsToConnectRangeChange);
 
   document
     .querySelector(".start-again")
@@ -347,10 +301,7 @@ function initActions() {
 
   document
     .querySelector(".player-settings .reset")
-    .addEventListener("click", () => {
-      handleStartAgain();
-      handleClosePlayerSettingsModal();
-    });
+    .addEventListener("click", handleStartAgain);
 
   document
     .querySelector(".player-info .cancel")
@@ -369,7 +320,31 @@ function initActions() {
     .addEventListener("change", changeAddingTokensClick);
 }
 
-function initDivAction(div, columnKey) {
+function handleColumnsRangeChange() {
+  state.columns = Number(document.querySelector("#columns").value);
+  renderRangeValuesInSpans();
+  renderColumns();
+}
+function handleGridsToConnectRangeChange() {
+  state.gridsToConnect = Number(document.querySelector("#tokens").value);
+  renderRangeValuesInSpans();
+}
+
+function handleStartAgain() {
+  state.tokensCounter = 0;
+  state.validationObj = {};
+  renderColumns();
+  deleteAllToken();
+  handleClosePlayerSettingsModal();
+}
+
+/**
+ *
+ * @param {*} div DOM rendered column
+ * @param {*} columnKey the column key of state validation object that include all added tokens
+ */
+function initColumnActions(div, columnKey) {
+  //Changing click type to single click as double click doesn't work on mobile simulator.
   checkScreenWidth();
   div.addEventListener(state.clickType, () => {
     const token = state.turn ? 1 : 0;
@@ -379,6 +354,7 @@ function initDivAction(div, columnKey) {
 
     // const token = new Token(state.tokenCount)
 
+    // Check if there is a place for an extra token.
     if (checkAddiablity(div)) {
       div.insertAdjacentHTML("beforeend", tokenDiv);
       // token._renderToken(e.target.dataset.columnId)
@@ -393,6 +369,16 @@ function initDivAction(div, columnKey) {
   });
 }
 
+/**
+ * Changing click type to single click as double click doesn't work on mobile simulator.
+ */
+function checkScreenWidth() {
+  if (window.innerWidth < 700) {
+    state.clickType = CONSTANTS.CLICK;
+    document.querySelector("#dblClick").checked = false;
+  }
+}
+
 //#endregion
 
 /**
@@ -402,7 +388,13 @@ function initDivAction(div, columnKey) {
  */
 //#region
 
-function renderInputValues() {
+function renderRangeValuesInInputs() {
+  document.querySelector("#columns").value = state.columns;
+  document.querySelector("#tokens").value = state.gridsToConnect;
+  renderRangeValuesInSpans();
+}
+
+function renderRangeValuesInSpans() {
   // console.log(state.columns, state.gridsToConnect);
   document.querySelector(".columns-span").innerText = state.columns;
   document.querySelector(".tokens-span").innerText = state.gridsToConnect;
@@ -419,6 +411,27 @@ function showPlayer() {
   }
 }
 
+function renderColumns() {
+  document.querySelector(".columns-container").innerHTML = "";
+  for (let i = 0; i < state.columns; i++) {
+    const div = document.createElement("div");
+    div.setAttribute("data-column-id", i);
+    document.querySelector(".columns-container").appendChild(div);
+    state.validationObj[i] = [];
+    initColumnActions(div, i);
+  }
+  console.log(state.validationObj);
+}
+
+function deleteAllToken() {
+  document.querySelectorAll("[data-token-id]").forEach((el) => el.remove());
+}
+
+/**
+ *
+ * @param {div} div the column in which the token will be added
+ * @returns true when there is a place for another token else returns false.
+ */
 function checkAddiablity(div) {
   const tokens = div.querySelectorAll(".token");
 
@@ -437,16 +450,17 @@ function checkAddiablity(div) {
   }
 }
 
-function renderColumns() {
-  document.querySelector(".columns-container").innerHTML = "";
-  for (let i = 0; i < state.columns; i++) {
-    const div = document.createElement("div");
-    div.setAttribute("data-column-id", i);
-    document.querySelector(".columns-container").appendChild(div);
-    state.validationObj[i] = [];
-    initDivAction(div, i);
-  }
-  console.log(state.validationObj);
+function handleClosePlayerInfoModal() {
+  document.querySelector(".player-info").classList.remove("show-modal");
+}
+function handleOpenPlayerInfoModal() {
+  document.querySelector(".player-info").classList.add("show-modal");
+}
+function handleOpenPlayerSettingsModal() {
+  document.querySelector(".player-settings").classList.add("show-modal");
+}
+function handleClosePlayerSettingsModal() {
+  document.querySelector(".player-settings").classList.remove("show-modal");
 }
 
 function announceWinner(token, tokensArray) {
@@ -457,13 +471,6 @@ function announceWinner(token, tokensArray) {
     document
       .querySelector(`[data-token-id='${token.tokenId}']`)
       .classList.add("winner");
-  }
-}
-
-function checkScreenWidth() {
-  if (window.innerWidth < 700) {
-    state.clickType = CONSTANTS.CLICK;
-    document.querySelector("#dblClick").checked = false;
   }
 }
 
