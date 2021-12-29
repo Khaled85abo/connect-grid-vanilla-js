@@ -59,12 +59,11 @@ class Token {
   _alignedToken() {}
 }
 
-function shiftPlayer() {
-  state.turn = !state.turn;
-  state.tokensCounter++;
-  showPlayer();
-}
-
+/**
+ * Checking results will only validate state validation object.
+ * If a match is found the tokens ids is send to announce winner function to be highlighted.
+ * @param {*} columnKey
+ */
 function checkResult(columnKey) {
   const {
     gridsToConnect,
@@ -278,6 +277,12 @@ function handle_d_verification(e) {
  */
 //#region
 
+function changePlayer() {
+  state.turn = !state.turn;
+  state.tokensCounter++;
+  showPlayer();
+}
+
 function initActions() {
   document
     .querySelector("#h-verification")
@@ -339,38 +344,7 @@ function handleStartAgain() {
 }
 
 /**
- *
- * @param {*} div DOM rendered column
- * @param {*} columnKey the column key of state validation object that include all added tokens
- */
-function initColumnActions(div, columnKey) {
-  //Changing click type to single click as double click doesn't work on mobile simulator.
-  checkScreenWidth();
-  div.addEventListener(state.clickType, () => {
-    const token = state.turn ? 1 : 0;
-    const tokenDiv = `<div data-token-id=${state.tokensCounter} class='token ${
-      state.turn ? "red" : "blue"
-    }'></div>`;
-
-    // const token = new Token(state.tokenCount)
-
-    // Check if there is a place for an extra token.
-    if (checkAddiablity(div)) {
-      div.insertAdjacentHTML("beforeend", tokenDiv);
-      // token._renderToken(e.target.dataset.columnId)
-      state.validationObj[columnKey].push({
-        token,
-        tokenId: state.tokensCounter,
-      });
-      checkResult(columnKey);
-      shiftPlayer();
-    }
-    console.log(state.validationObj);
-  });
-}
-
-/**
- * Changing click type to single click as double click doesn't work on mobile simulator.
+ * Changing click type to single click as double click doesn't work in mobile simulator.
  */
 function checkScreenWidth() {
   if (window.innerWidth < 700) {
@@ -412,13 +386,15 @@ function showPlayer() {
 }
 
 function renderColumns() {
+  //Changing click type to single click as double click doesn't work on mobile simulator.
+  checkScreenWidth();
   document.querySelector(".columns-container").innerHTML = "";
   for (let i = 0; i < state.columns; i++) {
     const div = document.createElement("div");
     div.setAttribute("data-column-id", i);
     document.querySelector(".columns-container").appendChild(div);
     state.validationObj[i] = [];
-    initColumnActions(div, i);
+    div.addEventListener(state.clickType, () => addToken(div, i));
   }
   console.log(state.validationObj);
 }
@@ -450,6 +426,33 @@ function checkAddiablity(div) {
   }
 }
 
+/**
+ *
+ * @param {*} columnDOM DOM rendered column
+ * @param {*} columnKey the column key in state validation object that include all columns tokens
+ */
+function addToken(columnDOM, columnKey) {
+  const token = state.turn ? 1 : 0;
+  const tokenDiv = `<div data-token-id=${state.tokensCounter} class='token ${
+    state.turn ? "red" : "blue"
+  }'></div>`;
+
+  // const token = new Token(state.tokenCount)
+
+  // Check if there is a place for an extra token.
+  if (checkAddiablity(columnDOM)) {
+    columnDOM.insertAdjacentHTML("beforeend", tokenDiv);
+    // token._renderToken(e.target.dataset.columnId)
+    state.validationObj[columnKey].push({
+      token,
+      tokenId: state.tokensCounter,
+    });
+    checkResult(columnKey);
+    changePlayer();
+  }
+  console.log(state.validationObj);
+}
+
 function handleClosePlayerInfoModal() {
   document.querySelector(".player-info").classList.remove("show-modal");
 }
@@ -472,6 +475,12 @@ function announceWinner(token, tokensArray) {
       .querySelector(`[data-token-id='${token.tokenId}']`)
       .classList.add("winner");
   }
+  // Not working
+  const columns = document.querySelectorAll(`[data-column-id]`);
+  console.log(columns);
+  columns.forEach((col) =>
+    col.removeEventListener(`${state.clickType}`, addToken, false)
+  );
 }
 
 function showSnackBar() {
