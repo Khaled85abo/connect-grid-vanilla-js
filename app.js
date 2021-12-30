@@ -45,6 +45,7 @@ function initState() {
   //   };
 }
 
+// Not used code.
 class Token {
   constructor(tokenCounter) {
     this.tokenId = tokenCounter;
@@ -61,7 +62,7 @@ class Token {
 
 /**
  * Checking results will only validate state validation object.
- * If a match is found the tokens ids is send to announce winner function to be highlighted.
+ * If a match is found, the tokens ids is send to (announceWinner) function to be highlighted.
  * @param {*} columnKey
  */
 function checkResult(columnKey) {
@@ -339,7 +340,7 @@ function handleStartAgain() {
   state.tokensCounter = 0;
   state.validationObj = {};
   renderColumns();
-  deleteAllToken();
+  deleteAllTokens();
   handleClosePlayerSettingsModal();
 }
 
@@ -350,6 +351,29 @@ function checkScreenWidth() {
   if (window.innerWidth < 700) {
     state.clickType = CONSTANTS.CLICK;
     document.querySelector("#dblClick").checked = false;
+  }
+}
+
+/**
+ *
+ * @param {div} div the column in which the token will be added
+ * @returns true when there is a place for another token else returns false.
+ */
+function checkAddiablity(div) {
+  const tokens = div.querySelectorAll(".token");
+
+  if (tokens.length === 0) {
+    return true;
+  }
+  if (tokens.length > 0) {
+    const tokenHeight = tokens[0].offsetHeight;
+
+    const leftSpace = div.offsetHeight - tokens.length * tokenHeight;
+    if (leftSpace > tokenHeight) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
@@ -399,37 +423,10 @@ function renderColumns() {
   console.log(state.validationObj);
 }
 
-function deleteAllToken() {
-  document.querySelectorAll("[data-token-id]").forEach((el) => el.remove());
-}
-
-/**
- *
- * @param {div} div the column in which the token will be added
- * @returns true when there is a place for another token else returns false.
- */
-function checkAddiablity(div) {
-  const tokens = div.querySelectorAll(".token");
-
-  if (tokens.length === 0) {
-    return true;
-  }
-  if (tokens.length > 0) {
-    const tokenHeight = tokens[0].offsetHeight;
-
-    const leftSpace = div.offsetHeight - tokens.length * tokenHeight;
-    if (leftSpace > tokenHeight) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
-
 /**
  *
  * @param {*} columnDOM DOM rendered column
- * @param {*} columnKey the column key in state validation object that include all columns tokens
+ * @param {*} columnKey the column key in state validation object that include all column's tokens
  */
 function addToken(columnDOM, columnKey) {
   const token = state.turn ? 1 : 0;
@@ -501,4 +498,9 @@ function showSnackBar() {
     snackBar.remove();
   }, state.snackBarTime * 1000);
 }
+
+function deleteAllTokens() {
+  document.querySelectorAll("[data-token-id]").forEach((el) => el.remove());
+}
+
 //#endregion
