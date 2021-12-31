@@ -444,6 +444,9 @@ function addToken(columnDOM, columnKey) {
       token,
       tokenId: state.tokensCounter,
     });
+    if (state.tokensCounter === 0) {
+      columnDOM.scrollIntoView({ block: "end", behavior: "smooth" });
+    }
     checkResult(columnKey);
     changePlayer();
   }
