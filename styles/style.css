@@ -187,9 +187,6 @@
 .player-info > div > div:first-of-type > ul > li {
   padding: 0.4rem 0;
 }
-.player-info label {
-  margin: 2rem 0 0.5rem 0;
-}
 
 .player-info button,
 .player-settings button {
@@ -203,14 +200,9 @@
 .player-settings button:hover {
   box-shadow: inset 0 0 5px black;
 }
-.player-info .btns button {
-  margin: 0 1rem;
-}
-
+.player-info .btns button,
 .player-settings .btns {
-  width: 60%;
-  display: flex;
-  justify-content: space-between;
+  margin: 0 1rem;
 }
 
 .snack-bar {

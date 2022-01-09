@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
-    <script src="app.js" defer></script>
+    <link rel="stylesheet" href="./styles/style.css" />
+    <script src="./js/main.js" type="module" defer></script>
     <title>Document</title>
   </head>
   <body>
@@ -64,12 +64,7 @@
           <input type="range" id="tokens" min="3" max="7" />
         </div>
       </section>
-      <main class="columns-container">
-        <!-- <div class="first"></div>
-        <div class="second"></div>
-        <div class="third"></div>
-        <div class="fourth"></div> -->
-      </main>
+      <main class="columns-container"></main>
       <section class="player-info">
         <!-- <div>
           <div>
@@ -133,6 +128,10 @@
             <h2>Change Settings</h2>
             <ul>
               <li>
+                <input type="checkbox" id="computer-player" />
+                <label for="computer-player">Activate Computer player.</label>
+              </li>
+              <li>
                 <input type="checkbox" id="dblClick" checked />
                 <label for="dblClick">Use Double click to add tokens.</label>
               </li>
@@ -169,7 +168,6 @@
           </div>
           <div class="btns">
             <button class="cancel">Cancel</button>
-            <button class="reset">Reset</button>
           </div>
         </div>
       </section>

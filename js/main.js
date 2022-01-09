@@ -1,7 +1,11 @@
 /***
  * IMPORTS
  */
-const state = {};
+import {
+  checkVertically,
+  checkHorizantally,
+  checkDiagonally,
+} from "./check-results.js";
 
 /**
  *
@@ -9,6 +13,7 @@ const state = {};
  *
  */
 ///#region
+const state = {};
 const CONSTANTS = {
   DBLCLICK: "dblclick",
   CLICK: "click",
@@ -17,8 +22,8 @@ function main() {
   initState();
   showPlayer();
   renderRangeValuesInInputs();
-  renderColumns();
   checkScreenWidth();
+  renderColumns();
 
   initActions();
 }
@@ -75,6 +80,7 @@ class Token {
  * If a match is found, the tokens ids is send to (announceWinner) function to be highlighted.
  * @param {*} columnKey
  */
+
 function checkResult(columnKey) {
   const {
     gridsToConnect,
@@ -82,155 +88,38 @@ function checkResult(columnKey) {
     h_verification,
     d_verification,
     validationObj,
+    columns,
   } = state;
   const column = validationObj[columnKey];
   if (v_verification) {
     if (column.length >= gridsToConnect) {
-      checkVertically(columnKey);
+      let output = checkVertically(columnKey, validationObj, gridsToConnect);
+      if (output) {
+        announceWinner(output.lastToken, output.tokensArray);
+      }
     }
   }
   if (h_verification) {
-    checkHorizantally(columnKey);
+    let output = checkHorizantally(
+      columnKey,
+      validationObj,
+      gridsToConnect,
+      columns
+    );
+    if (output) {
+      announceWinner(output.token, output.arr);
+    }
   }
   if (d_verification) {
-    checkDiagonally(columnKey);
-  }
-}
-
-function checkVertically(columnKey) {
-  const column = state.validationObj[columnKey];
-  let lastToken = column[column.length - 1].token;
-  const tokensArray = [column[column.length - 1]];
-  for (
-    let i = column.length - 2;
-    i >= column.length - state.gridsToConnect;
-    i--
-  ) {
-    if (lastToken !== column[i].token) {
-      return false;
-    }
-    tokensArray.push(column[i]);
-    // lastToken = column[i].token;
-  }
-  announceWinner(lastToken, tokensArray);
-}
-
-function checkHorizantally(columnKey) {
-  const column = state.validationObj[columnKey];
-  const lastToken = column[column.length - 1].token;
-  const theTokenIndex = column.length - 1; // It is always the last token added in a column that is going to be the start token
-
-  // creating arraies where the token occupiees all possibles positions
-  // and checking if any array contains the same tokens.
-  let validationArraies = [];
-
-  // console.log("token index: ", theTokenIndex);
-  for (let i = 0; i < state.gridsToConnect; i++) {
-    // extract token from nearby columns with the same token level (index).
-    const output = createHorizontalArrays(columnKey - i, theTokenIndex);
+    let output = checkDiagonally(
+      columnKey,
+      validationObj,
+      gridsToConnect,
+      columns
+    );
     if (output) {
-      validationArraies.push(output);
+      announceWinner(output.token, output.arr);
     }
-  }
-  for (let arr of validationArraies) {
-    let match = true;
-    let token = arr[0].token;
-    for (let el of arr) {
-      if (el.token !== token) {
-        match = false;
-      }
-    }
-    if (match) {
-      announceWinner(token, arr);
-    }
-  }
-}
-
-function createHorizontalArrays(columnIndex, theTokenIndex) {
-  let output = [];
-  for (let j = columnIndex; j < columnIndex + state.gridsToConnect; j++) {
-    if (j >= 0 && j < state.columns) {
-      output.push(state.validationObj[j][theTokenIndex]);
-    }
-  }
-  // filtering out all undefined values from output array
-  let filteredOutput = output.filter((item) => item !== undefined);
-  // Returning only output array that has as many items as gridsToConnect
-  if (filteredOutput.length === state.gridsToConnect) {
-    return filteredOutput;
-  }
-}
-
-function checkDiagonally(columnKey) {
-  const column = state.validationObj[columnKey];
-  const theTokenIndex = column.length - 1; // It is always the last token added in a column that is going to be the start token
-
-  // creating arraies where the token occupiees all possibles positions
-  let validationArraies = [];
-
-  // with 135 tilting
-  for (let i = 0; i < state.gridsToConnect; i++) {
-    const output = createDiagonal135DegArrays(columnKey - i, theTokenIndex + i);
-    if (output) {
-      validationArraies.push(output);
-    }
-  }
-
-  // with 45 tilting
-  for (let i = 0; i < state.gridsToConnect; i++) {
-    const output = createDiagonal45DegArrays(columnKey - i, theTokenIndex - i);
-    if (output) {
-      validationArraies.push(output);
-    }
-  }
-
-  // Checking if any array contains the same token.
-  for (let arr of validationArraies) {
-    let match = true;
-    let token = arr[0].token;
-    for (let el of arr) {
-      if (el.token !== token) {
-        match = false;
-      }
-    }
-    if (match) {
-      announceWinner(token, arr);
-    }
-  }
-}
-
-function createDiagonal135DegArrays(columnIndex, theTokenIndex) {
-  let output = [];
-
-  let startTokenIndex = theTokenIndex;
-  for (let j = columnIndex; j < columnIndex + state.gridsToConnect; j++) {
-    if (j >= 0 && j < state.columns) {
-      output.push(state.validationObj[j][startTokenIndex]);
-      startTokenIndex--;
-    }
-  }
-  // filtering out all undefined values from output array
-  let filteredOutput = output.filter((item) => item !== undefined);
-  // Returning only output array that has as many items as gridsToConnect
-  if (filteredOutput.length === state.gridsToConnect) {
-    return filteredOutput;
-  }
-}
-function createDiagonal45DegArrays(columnIndex, theTokenIndex) {
-  let output = [];
-
-  let startTokenIndex = theTokenIndex;
-  for (let j = columnIndex; j < columnIndex + state.gridsToConnect; j++) {
-    if (j >= 0 && j < state.columns) {
-      output.push(state.validationObj[j][startTokenIndex]);
-      startTokenIndex++;
-    }
-  }
-  // filtering out all undefined values from output array
-  let filteredOutput = output.filter((item) => item !== undefined);
-  // Returning only output array that has as many items as gridsToConnect
-  if (filteredOutput.length === state.gridsToConnect) {
-    return filteredOutput;
   }
 }
 
@@ -589,7 +478,7 @@ function checkScreenWidth() {
  * @returns true when there is a place for another token else returns false.
  */
 function checkAddiablity(columnKey) {
-  console.log("check add ability in column: ", columnKey);
+  // console.log("check add ability in column: ", columnKey);
   const columnDOM = document.querySelector(`[data-column-id='${columnKey}']`);
   const tokens = columnDOM.querySelectorAll(".token");
 
@@ -648,7 +537,7 @@ function renderColumns() {
     div.setAttribute("data-column-id", i);
     document.querySelector(".columns-container").appendChild(div);
     state.validationObj[i] = [];
-    div.addEventListener(state.clickType, () => addToken(i));
+    div.addEventListener(state.clickType, addToken);
   }
   // console.log(state.validationObj);
 }
@@ -658,7 +547,13 @@ function renderColumns() {
  * @param {*} columnDOM DOM rendered column
  * @param {*} columnKey the column key in state validation object that include all column's tokens
  */
-function addToken(columnKey) {
+function addToken(e) {
+  let columnKey;
+  if (e.target) {
+    columnKey = e.target.dataset.columnId;
+  } else {
+    columnKey = e;
+  }
   const token = state.turn ? 1 : 0;
   const tokenDiv = `<div data-token-id=${state.tokensCounter} class='token ${
     state.turn ? "red" : "blue"
@@ -682,7 +577,7 @@ function addToken(columnKey) {
     state.tokensCounter++;
     changePlayer();
   }
-  // console.log(state.validationObj);
+  console.log(state.validationObj);
 }
 
 function handleClosePlayerInfoModal() {
@@ -700,19 +595,17 @@ function handleClosePlayerSettingsModal() {
 
 function announceWinner(token, tokensArray) {
   const winner = token === 1 ? "first player" : "second player";
-  // console.log("The winner is the", winner);
-  // console.log("array of tokens", tokensArray);
   for (let token of tokensArray) {
     document
       .querySelector(`[data-token-id='${token.tokenId}']`)
       .classList.add("winner");
   }
-  // Not working
-  const columns = document.querySelectorAll(`[data-column-id]`);
-  // console.log(columns);
-  // columns.forEach((col) =>
-  //   col.removeEventListener(`${state.clickType}`, addToken)
-  // );
+
+  const columns = document.querySelectorAll(".columns-container > div");
+  columns.forEach((col) => {
+    console.log(col);
+    col.removeEventListener(`${state.clickType}`, addToken);
+  });
 }
 
 function showSnackBar() {
